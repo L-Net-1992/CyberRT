@@ -1,20 +1,27 @@
-# Apollo(v8.0.0) CyberRT
+# Apollo(v9.0.0) CyberRT
 
 ![CyberRT](./docs/CyberRT.gif)
 
-| Target        |  Status  |
+| Target        |  CI Status  |
 | ------------- | :-----:|
-| Ubuntu18.04   | [![build v8.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu18-v8.0.0-build.yaml/badge.svg?branch=v8.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu18-v8.0.0-build.yaml) |
-| Ubuntu20.04   | [![build v8.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu20-v8.0.0-build.yaml/badge.svg?branch=v8.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu20-v8.0.0-build.yaml) |
-| Ubuntu22.04   | [![build v8.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu22-v8.0.0-build.yaml/badge.svg?branch=v8.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu22-v8.0.0-build.yaml) |
+| Ubuntu18.04 x86_64   | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu18-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu18-v9.0.0-build.yaml) |
+| Ubuntu20.04 x86_64  | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu20-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu20-v9.0.0-build.yaml) |
+| Ubuntu22.04 x86_64  | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu22-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu22-v9.0.0-build.yaml) |
+| Ubuntu24.04 x86_64  | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu24-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu24-v9.0.0-build.yaml) |
+| Ubuntu latest x86_64  | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu-latest-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu-latest-v9.0.0-build.yaml) |
+| Ubuntu18.04 arrch64 | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu18-arrch64-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu18-arrch64-v9.0.0-build.yaml) |
+| Ubuntu20.04  arrch64 | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu20-arrch64-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu20-arrch64-v9.0.0-build.yaml) |
+| Ubuntu22.04 arrch64 | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu22-arrch64-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu22-arrch64-v9.0.0-build.yaml) |
+| Ubuntu latest arrch64 | [![build v9.0.0](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu-latest-arrch64-v9.0.0-build.yaml/badge.svg?branch=v9.0.0)](https://github.com/minhanghuang/CyberRT/actions/workflows/ubuntu-latest-arrch64-v9.0.0-build.yaml) |
 
 ## #1 Env
 
 > dependence
 
 ```shell
-sudo apt install libpoco-dev uuid-dev libncurses5-dev python3-dev
-pip3 install protobuf
+sudo apt update
+sudo apt install -y uuid-dev libncurses5-dev python3-dev python3-pip
+python3 -m pip install protobuf==3.14.0
 ```
 
 ## #2 Build
@@ -22,7 +29,7 @@ pip3 install protobuf
 1. clone
 
 ```shell
-git clone --single-branch --branch v8.0.0  https://github.com/minhanghuang/CyberRT.git
+git clone --single-branch --branch v9.0.0 https://github.com/minhanghuang/CyberRT.git
 cd CyberRT
 ```
 
@@ -31,7 +38,8 @@ cd CyberRT
 > install
 
 ```shell
-./scripts/install.sh
+python3 install.py
+# python3 install.py --platform <your-platform-machine> --install_prefix <your-install-path>
 ```
 
 > export path
@@ -69,9 +77,19 @@ source setup.bash
 
 ```shell
 source setup.bash
-cyber_launch start share/examples/common.launch
+cyber_launch start share/examples/common_component_example/common.launch
 ./cyber/examples/common_component_example/channel_prediction_writer
 ./cyber/examples/common_component_example/channel_test_writer
+```
+
+3. log directory(optional)
+
+**The Cyber log storage path is similar to `ROS` and is saved in `~/.cyber/log`**
+
+If you want to modify the log storage path, you can change the `GLOG_log_dir` environment variable as follows:
+
+```shell
+# export GLOG_log_dir=/path/to/cyber/log
 ```
 
 ## #4 Tools
@@ -126,7 +144,7 @@ Commands:
 4. launch
 
 ```shell
-cyber_launch start share/examples/common.launch
+cyber_launch start share/examples/common_component_example/common.launch
 ```
 
 5. monitor
@@ -146,11 +164,24 @@ Commands:
 	cyber_recorder recover	Recover an exist record.
 ```
 
-## #5 Package
+## #5 Packages
 
 ```shell
 cmake -DCMAKE_INSTALL_PREFIX=/you/install/path ..
-make
+make -j$(nproc)
 make package
 sudo dpkg -i package/*.deb
+```
+
+```
+# CMakeLists.txt
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(Cyber REQUIRED cyber)
+include_directories(
+  ${Cyber_INCLUDE_DIRS}
+)
+link_directories(${Cyber_LIB_DIRS})
+target_link_libraries(${TARGET_NAME}
+  ${Cyber_LIBRARIES}
+)
 ```

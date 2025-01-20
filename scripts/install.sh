@@ -37,7 +37,7 @@ function build_setup() {
   pushd "$CURRENT_PATH/../third_party/$NAME/"
   mkdir -p build && cd build
   cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
-  sudo make install
+  make install -j$(nproc)
   popd
 }
 
@@ -48,8 +48,19 @@ function build_nlohmann_json() {
   pushd "$CURRENT_PATH/../third_party/$NAME/"
   mkdir -p build && cd build
   cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
-  make -j$(nproc)
-  sudo make install
+  make install -j$(nproc)
+  popd
+}
+
+function build_tinyxml2() {
+  echo "############### Build Tinyxml2. ################"
+  local NAME="tinyxml2"
+  download "https://github.com/leethomason/tinyxml2.git" "$NAME"
+  pushd "$CURRENT_PATH/../third_party/$NAME/"
+  git checkout 8.0.0
+  mkdir -p build && cd build
+  cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
+  make install -j$(nproc)
   popd
 }
 
@@ -61,7 +72,7 @@ function build_fastdds() {
   # git submodule update --init
   # patch -p1 < "$CURRENT_PATH/../scripts/FastRTPS_1.5.0.patch"
   # mkdir -p build && cd build
-  # cmake -DEPROSIMA_BUILD=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/trunk/work/code/github/CyberRT/third_party/Fast-RTPS/build/external/install ..
+  # cmake -DEPROSIMA_BUILD=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=external/install ..
   # make -j$(nproc)
   # make install
   # cmake -DEPROSIMA_BUILD=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX ..
@@ -84,7 +95,7 @@ function build_fastdds() {
   fi
   pushd $INSTALL_PATH
   tar -zxf ${PKG_NAME}
-  sudo cp -r fast-rtps-1.5.0-1/* ../install
+  cp -r fast-rtps-1.5.0-1/* ../install
   rm -rf fast-rtps-1.5.0-1
   popd
 }
@@ -101,8 +112,7 @@ function build_gfamily() {
   git checkout v2.2.0
   mkdir -p build && cd build
   CXXFLAGS="-fPIC" cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
-  make -j$(nproc)
-  sudo make install
+  make install -j$(nproc)
   popd
 
   # glog
@@ -112,12 +122,11 @@ function build_gfamily() {
   if [ "$ARCH" == "x86_64" ]; then
     CXXFLAGS="-fPIC" cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
   elif [ "$ARCH" == "aarch64" ]; then
-    CXXFLAGS="-fPIC" cmake --build=armv8-none-linux -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
+    CXXFLAGS="-fPIC" cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
   else
       echo "not support $ARCH"
   fi
-  make -j$(nproc)
-  sudo make install
+  make install -j$(nproc)
   popd
  
   # googletest
@@ -125,17 +134,15 @@ function build_gfamily() {
   git checkout release-1.10.0
   mkdir -p build && cd build
   CXXFLAGS="-fPIC" cmake -DCMAKE_CXX_FLAGS="-w" -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DBUILD_SHARED_LIBS=ON ..
-  make -j8
-  sudo make install
+  make install -j$(nproc)
   popd
 
   # protobuf
   pushd "$CURRENT_PATH/../third_party/protobuf/"
   git checkout v3.14.0
   cd cmake && mkdir -p build && cd build
-  cmake -Dprotobuf_BUILD_SHARED_LIBS=ON -Dprotobuf_BUILD_TESTS=OFF ..
-  make -j$(nproc)
-  sudo make install
+  cmake -Dprotobuf_BUILD_SHARED_LIBS=ON -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX ..
+  make install -j$(nproc)
   popd
 }
 
@@ -144,6 +151,7 @@ function main() {
   init
   build_setup
   build_nlohmann_json
+  build_tinyxml2
   build_gfamily
   build_fastdds
   return
